@@ -174,12 +174,13 @@ def main():
         print("Error: click is required for CLI")
         sys.exit(1)
     
-    # Simple click group with run as default
+    # Create a parentclick group to share options
     @click.group()
     def cli():
         """Windows Audit Suite - Comprehensive Windows system audit tool."""
         pass
     
+    # Add options to group
     @cli.command()
     @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
     @click.option("--output", "-o", type=click.Path(), help="Output file path")
@@ -196,7 +197,7 @@ def main():
         help="Modules to run (comma-separated)"
     )
     def run(verbose, output, format, modules):
-        """Run the audit."""
+        """Run the audit (default command)."""
         # Create CLI
         cli_obj = WindowsAuditCLI(
             verbose=verbose,
@@ -224,8 +225,12 @@ def main():
             click.echo(f"Error: {e}", err=True)
             sys.exit(1)
     
-    @cli.command()
-    def list():
+    # Make 'run' the default command
+    cli.commands['run'] = cli.commands.pop('run')
+    
+    # Add list
+    @cli.command(name='list')
+    def list_modules():
         """List available modules."""
         click.echo("Available modules:")
         click.echo("")
@@ -234,11 +239,12 @@ def main():
             desc = MODULE_DESCRIPTIONS.get(module, "")
             click.echo(f"  {module:15s} - {desc}")
     
-    # Run CLI (default to run if no subcommand)
+    # Run CLI default
     if len(sys.argv) == 1:
         sys.argv.append("run")
     
-    cli(obj={})
+    # Run the CLI
+    cli(obj={}, standalone_mode=False)
 
 
 if __name__ == "__main__":
