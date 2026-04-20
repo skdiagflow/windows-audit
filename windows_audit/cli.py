@@ -169,12 +169,18 @@ class WindowsAuditCLI:
 
 
 def main():
-    """Main entry point."""
+    """Main entry point - simplified CLI."""
     if not CLICK_AVAILABLE:
         print("Error: click is required for CLI")
         sys.exit(1)
     
+    # Simple click group with run as default
     @click.group()
+    def cli():
+        """Windows Audit Suite - Comprehensive Windows system audit tool."""
+        pass
+    
+    @cli.command()
     @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
     @click.option("--output", "-o", type=click.Path(), help="Output file path")
     @click.option(
@@ -184,33 +190,18 @@ def main():
         default="cli",
         help="Output format"
     )
-    @click.pass_context
-    def cli(ctx, verbose, output, format):
-        """Windows Audit Suite - Comprehensive Windows system audit tool."""
-        ctx.ensure_object(WindowsAuditCLI)
-        ctx.obj.verbose = verbose
-        ctx.obj.output = output
-        ctx.obj.format = format
-    
-    @cli.command()
     @click.option(
         "--modules", 
         "-m", 
         help="Modules to run (comma-separated)"
     )
-    @click.pass_context
-    def run(ctx, modules):
+    def run(verbose, output, format, modules):
         """Run the audit."""
-        # Parse modules
-        module_list = None
-        if modules:
-            module_list = [m.strip() for m in modules.split(",")]
-        
         # Create CLI
         cli_obj = WindowsAuditCLI(
-            verbose=ctx.obj.verbose,
-            output=ctx.obj.output,
-            format=ctx.obj.format
+            verbose=verbose,
+            output=output,
+            format=format
         )
         
         # Run audit
@@ -218,16 +209,16 @@ def main():
             results = cli_obj.run(modules)
             
             # Output
-            if ctx.obj.format != "pdf" and ctx.obj.format != "excel":
+            if format != "pdf" and format != "excel":
                 content = cli_obj.format_output()
                 
-                if ctx.obj.output:
+                if output:
                     cli_obj.save_output(content)
                 else:
                     click.echo(content)
             else:
                 cli_obj.format_output()
-                click.echo(f"Output saved to {ctx.obj.output}")
+                click.echo(f"Output saved to {output}")
                 
         except Exception as e:
             click.echo(f"Error: {e}", err=True)
@@ -243,7 +234,10 @@ def main():
             desc = MODULE_DESCRIPTIONS.get(module, "")
             click.echo(f"  {module:15s} - {desc}")
     
-    # Run CLI
+    # Run CLI (default to run if no subcommand)
+    if len(sys.argv) == 1:
+        sys.argv.append("run")
+    
     cli(obj={})
 
 
