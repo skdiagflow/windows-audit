@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "windows-audit"
+version = "1.0.0"
+description = "Comprehensive Windows Manager-level audit suite with multi-format export"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Windows Audit Team", email = "team@windows-audit.local"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+]
+dependencies = [
+    "pywin32>=306",
+    "psutil>=5.9.0",
+    "openpyxl>=3.1.0",
+    "xlsxwriter>=3.1.0",
+    "jinja2>=3.1.0",
+    "colorama>=0.4.6",
+    "requests>=2.31.0",
+    "rich>=13.0.0",
+    "click>=8.1.0",
+    "weasyprint>=60.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+windows-audit = "windows_audit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["windows_audit*"]
+
+[tool.setuptools.package-data]
+windows_audit = ["templates/*.html"]

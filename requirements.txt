@@ -1,0 +1,23 @@
+# Core dependencies
+pywin32>=306
+psutil>=5.9.0
+
+# Excel/CSV export
+openpyxl>=3.1.0
+xlsxwriter>=3.1.0
+
+# HTML and PDF generation
+jinja2>=3.1.0
+weasyprint>=60.0
+markdown>=3.5.0
+
+# CLI and formatting
+colorama>=0.4.6
+rich>=13.0.0
+click>=8.1.0
+
+# HTTP requests (browser API detection)
+requests>=2.31.0
+
+# PDF alternative
+reportlab>=4.0.0
