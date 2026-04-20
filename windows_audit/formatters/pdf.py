@@ -6,8 +6,10 @@ from pathlib import Path
 try:
     from weasyprint import HTML, CSS
     WEASYPRINT_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError) as e:
+    # OSError: Windows GTK library issues
     WEASYPRINT_AVAILABLE = False
+    _weasyprint_error = str(e)
 
 from ..utils import get_logger
 
@@ -43,7 +45,11 @@ class PDFFormatter:
             PDF bytes
         """
         if not WEASYPRINT_AVAILABLE:
-            raise RuntimeError("WeasyPrint not available")
+            raise RuntimeError(
+                "PDF generation requires WeasyPrint with GTK libraries. "
+                "Install GTK for Windows or use 'conda install -c conda-forge weasyprint'. "
+                "Alternatively, export to HTML format instead."
+            )
         
         try:
             html = HTML(string=html_content)
